@@ -3,7 +3,8 @@ app.controller('FeedController', ['$scope', 'APIFactory', function ($scope, APIF
 
   $scope.getTweets = function () {
     APIFactory.getTweets().then(function(data) {
-      console.log(data);
+      console.log(data.data);
+      $scope.feed = data.data;
     });
   };
 }]);

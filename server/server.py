@@ -3,7 +3,8 @@ import urlparse
 import oauth2 as oauth
 import os, sys
 from auth import *
-from flask import Flask, request
+from flask import Flask, request, redirect
+
  
 app = Flask(__name__, static_folder='../client')      
  
@@ -21,8 +22,8 @@ authorize_url = 'https://api.twitter.com/oauth/authorize'
 # said access token.
 
 @app.route('/tweetsfeed')
+
 def getTweets():
-  print 'MAD J'
   consumer = oauth.Consumer(consumer_key, consumer_secret)
   client = oauth.Client(consumer)
   resp, content = client.request(request_token_url, "GET")
@@ -31,18 +32,18 @@ def getTweets():
 
   request_token = dict(urlparse.parse_qsl(content))
 
-  print "Request Token:"
-  print "    - oauth_token        = %s" % request_token['oauth_token']
-  print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
-  print 
+  # print "Request Token:"
+  # print "    - oauth_token        = %s" % request_token['oauth_token']
+  # print "    - oauth_token_secret = %s" % request_token['oauth_token_secret']
+  # print 
 
-  # Step 2: Redirect to the provider. Since this is a CLI script we do not 
-  # redirect. In a web application you would redirect the user to the URL
-  # below.
+  # # Step 2: Redirect to the provider. Since this is a CLI script we do not 
+  # # redirect. In a web application you would redirect the user to the URL
+  # # below.
 
-  print "Go to the following link in your browser:"
-  print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-  print 
+  # print "Go to the following link in your browser:"
+  print "Location:%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
+  # print 
 
   # After the user has granted access to you, the consumer, the provider will
   # redirect you to whatever URL you have told them to redirect to. You can 
@@ -80,7 +81,7 @@ def getTweets():
       return content
    
   home_timeline = oauth_req( 'https://api.twitter.com/1.1/statuses/home_timeline.json', access_token['oauth_token'], access_token['oauth_token_secret'])
-  print home_timeline
+  return home_timeline
 @app.route('/')
 def home():
   return app.send_static_file('index.html')
@@ -90,4 +91,4 @@ def static_prox(path):
   return app.send_static_file(path)
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run()

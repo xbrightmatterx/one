@@ -50,13 +50,10 @@ class Instagram:
       token_json = response.json();
       if(session['id']):
         user = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
-        # if(user.instagramToken):
-        #   return redirect(os.environ['REDIRECT_URI']+'/#/feed') 
+          
         user.instagramToken = token_json['access_token']
         db.session.commit()
         session['igToken'] = token_json['access_token']
-        # self.IG_TOKEN = token_json['access_token']
-        # self.IG_USER = token_json['user']
       else:
         return redirect(os.environ['REDIRECT_URI']+'/#/')
 

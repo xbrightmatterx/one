@@ -97,6 +97,7 @@ class Instagram:
 
     @app.route('/instagram/feed')
     def getOwnFeed():
+      print('session["id"]', session['id'])
       if(session['id']):
         if('igToken' not in session):
           user = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
@@ -108,11 +109,13 @@ class Instagram:
         if(self.embedsLeft == 0):
 
           response = requests.get(url)
+         
           try:
             for link in response.json()['data']:
               Thread(target=embedLoader, args=[link]).start()
               self.embedsLeft += 1
-          except:
+          except e:
+            print(e)
             print('error grabbing urls')
 
         #list to be populated to send to client from qmbd

@@ -33,22 +33,21 @@ class Soundcloud:
     #mid handshake route, retrieves access token
     @app.route('/soundcloud/redirect')
     def soundAuth():
-#     try:
-      code = request.args.get('code')
-      print('code', code, 'request.args', request.args)
-      access_token = client.exchange_token(code)
-      user = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
-      user.soundcloudToken = access_token.access_token
-      self.db.session.commit()
-      print('we here', access_token.access_token)
-#3      session['soundcloudToken'] = access_token.access_token
+      try:
+        code = request.args.get('code')
+        print('code', code, 'request.args', request.args)
+        access_token = client.exchange_token(code)
+        user = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
+        user.soundcloudToken = access_token.access_token
+        self.db.session.commit()
+        print('we here', access_token.access_token)
+        session['soundcloudToken'] = access_token.access_token
         
-#     except e:
-#      print(e)
-      print('soundcloud error in soundAuth: token shake')
-#     finally: 
-      print('redirect', session['soundcloudToken'])
-      return redirect(os.environ['REDIRECT_URI'] +'/#/feed')
+      except e:
+        print('soundcloud error in soundAuth: token shake')
+      finally: 
+        print('redirect', session['soundcloudToken'])
+        return redirect(os.environ['REDIRECT_URI'] +'/#/feed')
 
     @app.route('/soundcloud/stats')
     def soundStats():
@@ -81,6 +80,7 @@ class Soundcloud:
       if ('soundcloudToken' not in session):
         user = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
         session['soundcloudToken'] = user.soundcloudToken
+        print('instream: ', user.soundcloudToken, user)
       try:
         client = soundcloud.Client(access_token=session['soundcloudToken'])
       except:

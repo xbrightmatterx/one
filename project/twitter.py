@@ -57,16 +57,19 @@ class Twitter:
       self.ACCESS_TOKEN = dict(urllib.parse.parse_qsl(content2))
       session['twitterToken'] = self.ACCESS_TOKEN[b'oauth_token']
       session['twitterSecret'] = self.ACCESS_TOKEN[b'oauth_token_secret']
+
       userTwitter = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
       userTwitter.twitterToken = session['twitterToken']
       userTwitter.twitterSecret = session['twitterSecret']
       self.db.session.commit()
+      
       return redirect(os.environ['REDIRECT_URI']+'/#/feed')
 
     # After Authorized...redirect to tweetsfeed which will make a call
     # to grab the users TimeLine (from APIfactory)
     @app.route('/twitter/feed')
     def theTweets():
+
       if(session['id']):
         if('twitterToken' not in session):
           userTwitter = self.db.session.query(self.db.User).filter_by(authToken=session['id']).first()
@@ -74,9 +77,11 @@ class Twitter:
             return 'Null'
           session['twitterToken'] = str.encode(userTwitter.twitterToken)
           session['twitterSecret'] = str.encode(userTwitter.twitterSecret)
+
       try:
         home_timeline = oauth_req( 'https://api.twitter.com/1.1/statuses/home_timeline.json', session['twitterToken'], session['twitterSecret'], 'GET')
         return home_timeline
+
       except:
         return json.dumps({})
 

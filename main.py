@@ -11,10 +11,10 @@ from server import *
 
 # from flask.ext.bower import Bower
 
-# from soundcloudAPI import *
-# from reddit import *
-# from instagram import *
-# from twitter import *
+from soundcloudAPI import *
+from reddit import *
+from instagram import *
+from twitter import *
 from db_route import *
 
 

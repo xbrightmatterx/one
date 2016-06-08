@@ -16,7 +16,7 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
   var buildFeed = function (data, type, date) { 
     var Feed  = [], 
        feedItemDate, htmlFrame, obj;
-    angular.forEach(data, function (item) {
+    data.forEach(function (item) {
       var append = true;
 
       if (type === 'reddit') {

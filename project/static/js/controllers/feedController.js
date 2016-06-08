@@ -14,12 +14,14 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
   });
 
   var buildFeed = function (data, type, date) { 
-    var theFeed  = [], 
-       theDate, htmlFrame, obj;
+    var Feed  = [], 
+       feedItemDate, htmlFrame, obj;
     angular.forEach(data, function (item) {
       var append = true;
+
       if (type === 'reddit') {
-        if(item.url.endsWith('.jpg')){
+
+        if (item.url.endsWith('.jpg')) {
           obj = {
             image_url : item.url.substring(5,item.length),
             type: 'reddit',
@@ -29,11 +31,13 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
             displayTime: moment(new Date(item.created_utc*1000)).fromNow(),
             url: 'http://reddit.com'+ item.permalink
           };
-        }
-        else{
+
+        } else {
           append = false;
         }
+
       } else if (type === 'twitter') {
+
         obj = {
          text : item.text, 
          created_at: new Date(item.created_at),
@@ -42,28 +46,33 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
          user: {screen_name : item.user.screen_name}, 
          id_str: item.id_str 
         };
-      } else if(type === 'instagram' || type === 'soundcloud'){
-        if(item.embed){
+
+      } else if(type === 'instagram' || type === 'soundcloud') {
+
+        if (item.embed) {
+
           htmlFrame = $sce.trustAsHtml(item.embed);
-          theDate = date ? new Date(item.time * 1000) : new Date(item.time);
+          feedItemDate = date ? new Date(item.time * 1000) : new Date(item.time);
           obj = {
            frame: htmlFrame, 
-           created_at: theDate,
-           displayTime: moment(theDate).fromNow(), 
+           created_at: feedItemDate,
+           displayTime: moment(feedItemDate).fromNow(), 
            type: type
           };
-        }else{
+
+        } else {
           append = false;
         }
       } 
-      append ? theFeed.push(obj) : null;
+      append ? Feed.push(obj) : null;
      
     });
-    return theFeed;
+    return Feed;
   };
 
   $scope.isValidUser = function () {
     var user = sessionStorage.getItem('at');
+
     if (!user) {
       $location.path('home');
     } else {
@@ -72,8 +81,9 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
   };
 
   $scope.getTweets = function ( ) {
+
     TwitterFactory.getTweets().then(function ( data ) {
-      if(Array.isArray(data.data)){
+      if (Array.isArray(data.data)) {
         var items = buildFeed(data.data, 'twitter');
         $scope.feed.push.apply($scope.feed, items);
       }
@@ -126,21 +136,26 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
     }
     tweet = array.join("");
     TwitterFactory.postTweet( tweet ).then(function ( response ) {
-      console.log(response);
+      // Tweet success
+    })
+    .catch(function (err) {
+      return console.error('Error posting tweet: ', err);
     });
   };
 
   $scope.getInstaFeed = function ( ) {
+
     InstagramFactory.getInstaFeed().then(function ( data ) {
       var items = buildFeed(data.data.data, 'instagram', true);
       $scope.feed.push.apply($scope.feed, items);
-      if(data.data.is_more_data) {
+      if (data.data.is_more_data) {
         $scope.getInstaFeed();
       }
     });
   };
 
   $scope.getSoundFeed = function ( ) {
+
     SoundCloudFactory.getSongs().then(function (data) {
       var items = buildFeed(data.data.data, 'soundcloud');
       $scope.feed.push.apply($scope.feed, items);
@@ -148,29 +163,34 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
         $scope.getSoundFeed();
       }
     });
+
   };
   
   $scope.getRedditFeed = function ( ) {
-    if(localStorage.redditToggle){
+
+    if (localStorage.redditToggle) {
       RedditFactory.getRedditFeed().then(function (data) {
-        if(Array.isArray(data.data)){
+        if (Array.isArray(data.data)) {
           var items = buildFeed(data.data, 'reddit');
           $scope.feed.push.apply($scope.feed, items);
         }
       });
     }
+
   };
 
-  $scope.toggle = function( type ) {
+  $scope.toggle = function ( type ) {
     var beenCalled = false;
 
     if(type === 'reddit' && RedditFactory.redditToggle === false){
       RedditFactory.redditToggle = true;
     }
-    angular.forEach($scope.feed, function ( post ) {
-      if(post.type === type) {
+    $scope.feed.forEach(function ( post ) {
+
+      if (post.type === type) {
         beenCalled = true;
       }
+
     });
 
     if (beenCalled === true) {  
@@ -195,15 +215,15 @@ app.controller('FeedController', ['$scope', 'PanelFactory', 'RedditFactory','Twi
     }
   };
 
-  $scope.refreshFeed = function ( ) {
+  $scope.refreshFeed = function () {
     window.history.go(0);
   };
 
-  $scope.panelToggle = function(){
+  $scope.panelToggle = function () {
     PanelFactory.checked = !PanelFactory.checked;
   };
 
-  $scope.logout = function() {
+  $scope.logout = function () {
     var authToken = sessionStorage.getItem('at');
     UsersFactory.logout({"at": authToken})
     .then(function ( res ) {

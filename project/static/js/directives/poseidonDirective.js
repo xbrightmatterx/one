@@ -4,7 +4,8 @@ app.directive('poseidon', ['SliderFactory','$window', '$timeout',
       restrict: 'E',
       scope: {
       },
-      link: function(scope, ele, attrs) {
+      link: function (scope, ele, attrs) {
+        // Building datasets for D3 visuals
         var dataset = [];
         var dataset2 = [];
         var dataset3 = [];
@@ -20,11 +21,12 @@ app.directive('poseidon', ['SliderFactory','$window', '$timeout',
           .then(function(resp){
             var totsFollowers = 0; 
             var totsFollowing = 0;
-            angular.forEach(resp, function (i) {
+            resp.forEach(function (i) {
               if (colorObj[i.media]) { colorObj[i.media][1]++; }
               if (i.counts) {
                 totsFollowing += i.counts.following;
                 totsFollowers += i.counts.followers;
+
                 dataset.push({ type: i.media, followers : i.counts.followers });
                 dataset2.push({ type: i.media, following : i.counts.following });
               } 
@@ -41,11 +43,11 @@ app.directive('poseidon', ['SliderFactory','$window', '$timeout',
                   .y(function(d) { return d.followers; })
                   .color(function (d) { return colorObj[d.type][0]; })
                   .showLegend(true)
-                  .showLabels(false)     //Display pie labels
-                  .labelThreshold(0.05)  //Configure the minimum slice size for labels to show up
-                  .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-                  .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-                  .donutRatio(0.35);     //Configure how big you want the donut hole size to be.
+                  .showLabels(false)    
+                  .labelThreshold(0.05) 
+                  .labelType("percent") 
+                  .donut(true)          
+                  .donutRatio(0.35);    
 
                 d3.select("#pie svg")
                     .datum(dataset)
@@ -55,7 +57,7 @@ app.directive('poseidon', ['SliderFactory','$window', '$timeout',
               chart.valueFormat(d3.format('d'));
               return chart;
             });
-            nv.addGraph(function() {
+            nv.addGraph(function () {
               var chart2 = nv.models.pieChart()
                  .x(function(d) { return d.type; })
                  .y(function(d) { return d.following; })
@@ -74,11 +76,10 @@ app.directive('poseidon', ['SliderFactory','$window', '$timeout',
               chart2.valueFormat(d3.format('d'));
               return chart2;
             });
-            nv.addGraph(function() {
+            nv.addGraph(function () {
               var chart3 = nv.models.pieChart()
                  .x(function(d) { return d.type; })
                  .y(function(d) { return d.count; })
-                 // .color(function(d){ return colorObj[d.type][0]; })
                  .showLegend(true)
                  .showLabels(false)    
                  .labelThreshold(0.05)  

@@ -47,16 +47,14 @@ class Twitter:
           self.REQUEST_TOKEN[b'oauth_token_secret'].decode('utf-8'))
       token.set_verifier(request.args.get('oauth_verifier'))
       client = oauth.Client(self.CONSUMER, token)
-      resp, content2 = client.request(access_token_url, "POST")
-      self.ACCESS_TOKEN = dict(urllib.parse.parse_qsl(content2))
+      resp, content = client.request(access_token_url, "POST")
+      self.ACCESS_TOKEN = dict(urllib.parse.parse_qsl(content))
       return redirect(os.environ['REDIRECT_URI']+'/#/feed')
 
     # After Authorized...redirect to tweetsfeed which will make a call
     # to grab the users TimeLine (from APIfactory)
     @app.route('/tweetsfeed')
-    def theTweets():
-      # print('returning instagram string')
-      # return 'twitter'      
+    def theTweets():     
       try:
         home_timeline = oauth_req( 'https://api.twitter.com/1.1/statuses/home_timeline.json', self.ACCESS_TOKEN[b'oauth_token'], self.ACCESS_TOKEN[b'oauth_token_secret'], 'GET')
         return home_timeline
@@ -85,8 +83,6 @@ class Twitter:
       print(fav_url)
       return oauth_req( fav_url, self.ACCESS_TOKEN[b'oauth_token'], self.ACCESS_TOKEN[b'oauth_token_secret'], 'POST')
 
-    # tried to combine these but python wouldnt behave.
-    # now we'll send them both back to angular and let angular comb throgh the mess
     @app.route('/twitter/followers')
     def getFollowers():
       try:

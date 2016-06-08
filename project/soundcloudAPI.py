@@ -1,4 +1,3 @@
-
 # /soundcloud/stats pulls stats for user
 # /sound is our auth route
 # /soundAuth is our redirect
@@ -35,7 +34,6 @@ class Soundcloud:
         code = request.args.get('code')
         access_token = client.exchange_token(code)
         self.SOUNDCLOUD_TOKEN = access_token.access_token
-        print("Hi there, %s" % client.get('/me').username)
       except:
         print('soundcloud error in soundAuth: token shake')
       finally: 

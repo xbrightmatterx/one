@@ -88,8 +88,6 @@ class Instagram:
 
     @app.route('/instagram/feed')
     def getOwnFeed():
-      # print('returning instagram string')
-      # return 'instagram'
       url = 'https://api.instagram.com/v1/users/self/feed?count=10&access_token=%s' % self.IG_TOKEN
       
       #if data q for client empty, we want to replenish it
@@ -116,15 +114,9 @@ class Instagram:
             print('nothin in qmbd yet')
 
       moreData = False
-      #originally this was set to >3 to account for 404s, working with the below comment block
+
       if(self.embedsLeft > 0):
         moreData = True
-      
-      # potential fix for buggy 404s, added a self.embeds-=1 to the except block
-      # in embedloader and it seems to fix the problem 
-      # if(self.embedsLeft <= 3):
-      #   self.embedsLeft = 0
-
 
       return json.dumps({'data': shortList, 'is_more_data': moreData})
 

@@ -9,7 +9,7 @@ var app = angular
     $routeProvider
       .when( '/', {
         controller: 'HomeController',
-        templateUrl:   'static/views/home.html'      
+        templateUrl: 'static/views/home.html'      
       })
 
       .when('/feed', { 
